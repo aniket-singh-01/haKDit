@@ -22,7 +22,7 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 			document.body.classList.add(storedTheme);
 			return;
 		}
-		setTheme('dark');
+		setTheme('light');
 	}, []);
 
 	const toggleTheme = () => {
