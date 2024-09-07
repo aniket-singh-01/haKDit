@@ -1,0 +1,389 @@
+import { useRef, useState } from 'react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
+import axios from 'axios';
+import Helmet from 'react-helmet';
+import {
+	Table,
+	TableBody,
+	TableCaption,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '@/components/ui/table';
+
+interface IUserData {
+	name: string | null;
+	documentId: string | null;
+	documentType: string | null;
+}
+interface IDialogs {
+	dialog1: boolean;
+	dialog2: boolean;
+	dialog3: boolean;
+	errorDialog: boolean; // New dialog for error handling
+}
+interface IResponse {
+	address: string;
+	disabilitypercentage: string;
+	disabilitytype: string;
+	dob: string;
+	docno: string;
+	gender: string;
+	incomedetails: string;
+	language: string;
+	name: string;
+	otherdata: string;
+	subjects: string;
+	type: string;
+	typematched: boolean;
+}
+
+function Ps1652() {
+	const [userData, setUserData] = useState<IUserData>({
+		name: null,
+		documentId: null,
+		documentType: null,
+	});
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [apiResponse, setApiResponse] = useState<IResponse | null>(null);
+	const [error, setError] = useState<string | null>(null); // Error state
+	const [dialogs, setDialogs] = useState<IDialogs>({
+		dialog1: false,
+		dialog2: false,
+		dialog3: false,
+		errorDialog: false,
+	});
+	const [showApiResponse, setShowApiResponse] = useState<boolean>(false);
+
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const handleGenerateOutput = async () => {
+		const formData = new FormData();
+		formData.append('file', selectedFile!);
+		formData.append('type', userData.documentType!);
+
+		try {
+			const response = await axios.post(
+				`${import.meta.env.VITE_BASE_URL}/api/upload`,
+				formData
+			);
+
+			setApiResponse({
+				address: response.data.address,
+				disabilitypercentage: response.data.disabilitypercentage,
+				disabilitytype: response.data.disabilitytype,
+				dob: response.data.dob,
+				docno: response.data.docno,
+				gender: response.data.gender,
+				incomedetails: response.data.incomedetails,
+				language: response.data.language,
+				name: response.data.name,
+				otherdata: response.data.otherdata,
+				subjects: response.data.subjects,
+				type: response.data.type,
+				typematched: JSON.parse(response.data.typematched),
+			});
+		} catch (err) {
+			console.error(err);
+			setError('Error occurred while processing the file. Please try again.');
+			setDialogs({ ...dialogs, errorDialog: true });
+		} finally {
+			setShowApiResponse(true);
+		}
+	};
+
+	const handleClearOutput = () => {
+		setUserData(() => {
+			return { name: null, documentId: null, documentType: null };
+		});
+		setSelectedFile(null);
+		setApiResponse(null);
+		setError(null);
+		if (fileInputRef.current) {
+			fileInputRef.current.value = '';
+		}
+	};
+
+	const compareData = (orig: string, supp: string): boolean => {
+		const processedOrig = orig.toLowerCase().replaceAll(' ', '');
+		const processedSupp = supp.toLowerCase().replaceAll(' ', '');
+
+		return processedOrig === processedSupp;
+	};
+
+	return (
+		<>
+			<div className='container mx-auto flex flex-col justify-center items-center px-5'>
+				<Helmet>
+					<title>haKDit | PS1652</title>
+				</Helmet>
+				<div className='w-full py-4 border rounded flex flex-col md:flex-row  justify-evenly items-center gap-5'>
+					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
+						<div
+							className={`${
+								userData.documentId !== null && userData.name !== null
+									? 'bg-green-600'
+									: 'bg-red-600'
+							} size-5 rounded-full`}
+						/>
+						<p
+							onClick={() => {
+								setDialogs({ ...dialogs, dialog2: true });
+							}}
+							className='underline text-blue-400 cursor-pointer'
+						>
+							Enter data
+						</p>
+					</div>
+					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
+						<div
+							className={`${
+								userData.documentType === null && selectedFile === null
+									? 'bg-red-600'
+									: 'bg-green-600'
+							} size-5 rounded-full`}
+						/>
+						<p
+							className='underline text-blue-400 cursor-pointer'
+							onClick={() => {
+								setDialogs({ ...dialogs, dialog1: true });
+							}}
+						>
+							Select document
+						</p>
+					</div>
+					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
+						<div
+							className={`${
+								apiResponse === null ? 'bg-red-600' : 'bg-green-600'
+							} size-5 rounded-full`}
+						/>
+						<p className='underline text-blue-400 cursor-pointer'>Validate</p>
+					</div>
+				</div>
+				{showApiResponse && apiResponse !== null && (
+					<pre className='w-full mt-5'>
+						{JSON.stringify(apiResponse, null, 2)}
+					</pre>
+				)}
+				{apiResponse !== null && (
+					<Table>
+						<TableCaption>
+							This table shows if the data you entered matches the data in the
+							API response
+						</TableCaption>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Field</TableHead>
+								<TableHead>API Response</TableHead>
+								<TableHead>Your data</TableHead>
+								<TableHead>Verified?</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							<TableRow>
+								<TableCell>Name</TableCell>
+								<TableCell>{apiResponse!.name}</TableCell>
+								<TableCell>{userData.name}</TableCell>
+								<TableCell
+									className={`font-bold uppercase ${
+										compareData(apiResponse!.name, userData.name!)
+											? 'bg-green-600'
+											: 'bg-red-600'
+									}`}
+								>
+									{compareData(apiResponse!.name, userData.name!)
+										? 'Yes'
+										: 'No'}
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell>Document Number</TableCell>
+								<TableCell>{apiResponse!.docno}</TableCell>
+								<TableCell>{userData.documentId}</TableCell>
+								<TableCell
+									className={`font-bold uppercase ${
+										compareData(apiResponse!.docno, userData.documentId!)
+											? 'bg-green-600'
+											: 'bg-red-600'
+									}`}
+								>
+									{compareData(apiResponse!.docno, userData.documentId!)
+										? 'Yes'
+										: 'No'}
+								</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell>Document Type</TableCell>
+								<TableCell>{apiResponse!.type}</TableCell>
+								<TableCell>{userData.documentType}</TableCell>
+								<TableCell
+									className={`font-bold uppercase ${
+										apiResponse!.typematched ? 'bg-green-600' : 'bg-red-600'
+									}`}
+								>
+									{compareData(apiResponse!.name, userData.name!)
+										? 'Yes'
+										: 'No'}
+								</TableCell>
+							</TableRow>
+						</TableBody>
+					</Table>
+				)}
+			</div>
+
+			{/* STEP 1 DIALOG */}
+			<Dialog
+				open={dialogs.dialog1}
+				onOpenChange={(open) => {
+					setDialogs({ ...dialogs, dialog1: open });
+				}}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Select document</DialogTitle>
+					</DialogHeader>
+					<DialogDescription className='flex flex-col gap-3'>
+						<Input
+							type='file'
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+								setSelectedFile(e.target.files![0]);
+							}}
+							accept='image/*,.pdf'
+						/>
+						<Select
+							defaultValue='AadhaarCard'
+							value={userData.documentType!}
+							onValueChange={(value) => {
+								setUserData((prev) => ({ ...prev, documentType: value }));
+							}}
+							required
+						>
+							<SelectTrigger>
+								<SelectValue placeholder='Select document type' />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value='AadhaarCard'>Aadhaar Card</SelectItem>
+								<SelectItem value='DriversLicense'>
+									Driver&apos;s License
+								</SelectItem>
+								<SelectItem value='PANCard'>PAN Card</SelectItem>
+								<SelectItem value='Marksheet'>Marksheet</SelectItem>
+								<SelectItem value='EWSCertificate'>EWS Certificate</SelectItem>
+								<SelectItem value='PWD_Certificate'>PWD Certificate</SelectItem>
+								<SelectItem value='GenericDocument'>
+									Generic Document
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</DialogDescription>
+					<DialogFooter>
+						<Button
+							onClick={() => {
+								setDialogs({ ...dialogs, dialog1: false });
+								handleGenerateOutput();
+							}}
+						>
+							Confirm selection
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* STEP 2 DIALOG */}
+			<Dialog
+				open={dialogs.dialog2}
+				onOpenChange={(open) => {
+					setDialogs({ ...dialogs, dialog2: open });
+				}}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Enter your data</DialogTitle>
+					</DialogHeader>
+					<DialogDescription className='flex flex-col gap-3'>
+						<Input
+							placeholder='Name'
+							value={userData.name ?? ''}
+							onChange={(e) =>
+								setUserData((prev) => ({ ...prev, name: e.target.value }))
+							}
+							className='w-full'
+						/>
+						<Input
+							required
+							placeholder={
+								userData.documentType === 'AadhaarCard'
+									? 'Aadhaar Number'
+									: userData.documentType === 'DriversLicense'
+									? "Driver's License Number"
+									: 'PAN Card Number'
+							}
+							value={userData.documentId ?? ''}
+							onChange={(e) =>
+								setUserData((prev) => ({ ...prev, documentId: e.target.value }))
+							}
+							className='w-full'
+						/>
+					</DialogDescription>
+					<DialogFooter className='flex flex-col md:flex-row gap-2'>
+						<Button onClick={handleClearOutput}>Clear</Button>
+						<Button
+							onClick={() => {
+								setDialogs({ ...dialogs, dialog2: false });
+							}}
+						>
+							Submit
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* ERROR DIALOG */}
+			<Dialog
+				open={dialogs.errorDialog}
+				onOpenChange={(open) => {
+					setDialogs({ ...dialogs, errorDialog: open });
+				}}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Error</DialogTitle>
+					</DialogHeader>
+					<DialogDescription>
+						{error} {/* Display error message */}
+					</DialogDescription>
+					<DialogFooter>
+						<Button
+							onClick={() => {
+								setDialogs({ ...dialogs, errorDialog: false });
+								setError(null); // Clear error
+							}}
+						>
+							Close
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+		</>
+	);
+}
+
+export default Ps1652;
