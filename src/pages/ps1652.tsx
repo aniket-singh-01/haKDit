@@ -27,7 +27,6 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-
 interface IUserData {
 	name: string | null;
 	documentId: string | null;
@@ -37,7 +36,7 @@ interface IDialogs {
 	dialog1: boolean;
 	dialog2: boolean;
 	dialog3: boolean;
-	errorDialog: boolean; // New dialog for error handling
+	errorDialog: boolean;
 }
 interface IResponse {
 	address: string;
@@ -55,15 +54,26 @@ interface IResponse {
 	typematched: boolean;
 }
 
+interface IDob {
+	day: string;
+	month: string;
+	year: string;
+}
+
 function Ps1652() {
 	const [userData, setUserData] = useState<IUserData>({
 		name: null,
 		documentId: null,
 		documentType: null,
 	});
+	const [dob, setDob] = useState<IDob>({
+		day: '1',
+		month: '1',
+		year: '2000',
+	});
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [apiResponse, setApiResponse] = useState<IResponse | null>(null);
-	const [error, setError] = useState<string | null>(null); // Error state
+	const [error, setError] = useState<string | null>(null);
 	const [dialogs, setDialogs] = useState<IDialogs>({
 		dialog1: false,
 		dialog2: false,
@@ -75,6 +85,8 @@ function Ps1652() {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleGenerateOutput = async () => {
+		setShowApiResponse(false);
+
 		const formData = new FormData();
 		formData.append('file', selectedFile!);
 		formData.append('type', userData.documentType!);
@@ -85,33 +97,27 @@ function Ps1652() {
 				formData
 			);
 
-			setApiResponse({
-				address: response.data.address,
-				disabilitypercentage: response.data.disabilitypercentage,
-				disabilitytype: response.data.disabilitytype,
-				dob: response.data.dob,
-				docno: response.data.docno,
-				gender: response.data.gender,
-				incomedetails: response.data.incomedetails,
-				language: response.data.language,
-				name: response.data.name,
-				otherdata: response.data.otherdata,
-				subjects: response.data.subjects,
-				type: response.data.type,
-				typematched: JSON.parse(response.data.typematched),
-			});
+			setApiResponse(response.data);
+
+			console.log(response.data);
 		} catch (err) {
 			console.error(err);
 			setError('Error occurred while processing the file. Please try again.');
 			setDialogs({ ...dialogs, errorDialog: true });
-		} finally {
-			setShowApiResponse(true);
 		}
 	};
 
 	const handleClearOutput = () => {
-		setUserData(() => {
-			return { name: null, documentId: null, documentType: null };
+		setUserData(() => ({
+			name: null,
+			documentId: null,
+			documentType: null,
+			dob: null,
+		}));
+		setDob({
+			day: '1',
+			month: '1',
+			year: '2000',
 		});
 		setSelectedFile(null);
 		setApiResponse(null);
@@ -124,8 +130,170 @@ function Ps1652() {
 	const compareData = (orig: string, supp: string): boolean => {
 		const processedOrig = orig.toLowerCase().replaceAll(' ', '');
 		const processedSupp = supp.toLowerCase().replaceAll(' ', '');
-
 		return processedOrig === processedSupp;
+	};
+
+	const renderTableRows = () => {
+		const rows = [
+			{
+				field: 'Name',
+				apiValue: apiResponse?.name,
+				userValue: userData.name,
+				verified: compareData(apiResponse?.name ?? '', userData.name ?? ''),
+			},
+
+			// Add document type-specific fields here
+			...(userData.documentType === 'AadhaarCard'
+				? [
+						{
+							field: 'Aadhaar Number',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+						{
+							field: 'Date of Birth',
+							apiValue: apiResponse!.dob,
+							userValue: `${dob.day}-${dob.month}-${dob.year}`,
+							verified:
+								String(apiResponse!.dob)
+									.replaceAll('/', '')
+									.replaceAll('-', '') === `${dob.day}${dob.month}${dob.year}`,
+						},
+				  ]
+				: []),
+			...(userData.documentType === 'DriversLicense'
+				? [
+						{
+							field: 'License Number',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+						{
+							field: 'Expiry Date',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+				  ]
+				: []),
+			...(userData.documentType === 'PANCard'
+				? [
+						{
+							field: 'PAN Number',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+				  ]
+				: []),
+			...(userData.documentType === 'Marksheet'
+				? [
+						{
+							field: 'Roll Number',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+						{
+							field: 'Institution Name',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+				  ]
+				: []),
+			...(userData.documentType === 'EWSCertificate'
+				? [
+						{
+							field: 'EWS Number',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+				  ]
+				: []),
+			...(userData.documentType === 'PWD_Certificate'
+				? [
+						{
+							field: 'PWD Number',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+				  ]
+				: []),
+			...(userData.documentType === 'GenericDocument'
+				? [
+						{
+							field: 'PWD Number',
+							apiValue: apiResponse!.docno,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.docno ?? '',
+								userData.documentId ?? ''
+							),
+						},
+				  ]
+				: []),
+			{
+				field: 'Document Type',
+				apiValue: apiResponse?.type,
+				userValue: userData.documentType,
+				verified: apiResponse?.typematched ?? false,
+			},
+		];
+		// Filter rows based on document type
+		const filteredRows = rows.filter(() => {
+			if (userData.documentType === 'AadhaarCard') return true;
+			if (userData.documentType === 'DriversLicense') return true;
+			if (userData.documentType === 'PANCard') return true;
+			if (userData.documentType === 'Marksheet') return true;
+			if (userData.documentType === 'EWSCertificate') return true;
+			if (userData.documentType === 'PWD_Certificate') return true;
+			if (userData.documentType === 'GenericDocument') return true;
+			return false;
+		});
+
+		return filteredRows.map((row) => (
+			<TableRow key={row.field}>
+				<TableCell>{row.field}</TableCell>
+				<TableCell>{row.apiValue}</TableCell>
+				<TableCell>{row.userValue}</TableCell>
+				<TableCell
+					className={`font-bold uppercase ${
+						row.verified ? 'bg-green-600' : 'bg-red-600'
+					}`}
+				>
+					{row.verified ? 'Yes' : 'No'}
+				</TableCell>
+			</TableRow>
+		));
 	};
 
 	return (
@@ -134,7 +302,7 @@ function Ps1652() {
 				<Helmet>
 					<title>haKDit | PS1652</title>
 				</Helmet>
-				<div className='w-full py-4 border rounded flex flex-col md:flex-row  justify-evenly items-center gap-5'>
+				<div className='w-full py-4 border rounded flex flex-col md:flex-row justify-evenly items-center gap-5'>
 					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
 						<div
 							className={`${
@@ -144,9 +312,7 @@ function Ps1652() {
 							} size-5 rounded-full`}
 						/>
 						<p
-							onClick={() => {
-								setDialogs({ ...dialogs, dialog2: true });
-							}}
+							onClick={() => setDialogs({ ...dialogs, dialog2: true })}
 							className='underline text-blue-400 cursor-pointer'
 						>
 							Enter data
@@ -162,9 +328,7 @@ function Ps1652() {
 						/>
 						<p
 							className='underline text-blue-400 cursor-pointer'
-							onClick={() => {
-								setDialogs({ ...dialogs, dialog1: true });
-							}}
+							onClick={() => setDialogs({ ...dialogs, dialog1: true })}
 						>
 							Select document
 						</p>
@@ -175,7 +339,12 @@ function Ps1652() {
 								apiResponse === null ? 'bg-red-600' : 'bg-green-600'
 							} size-5 rounded-full`}
 						/>
-						<p className='underline text-blue-400 cursor-pointer'>Validate</p>
+						<p
+							onClick={() => setShowApiResponse(true)}
+							className='underline text-blue-400 cursor-pointer'
+						>
+							Validate
+						</p>
 					</div>
 				</div>
 				{showApiResponse && apiResponse !== null && (
@@ -183,7 +352,7 @@ function Ps1652() {
 						{JSON.stringify(apiResponse, null, 2)}
 					</pre>
 				)}
-				{apiResponse !== null && (
+				{showApiResponse && apiResponse !== null && (
 					<Table>
 						<TableCaption>
 							This table shows if the data you entered matches the data in the
@@ -197,54 +366,7 @@ function Ps1652() {
 								<TableHead>Verified?</TableHead>
 							</TableRow>
 						</TableHeader>
-						<TableBody>
-							<TableRow>
-								<TableCell>Name</TableCell>
-								<TableCell>{apiResponse!.name}</TableCell>
-								<TableCell>{userData.name}</TableCell>
-								<TableCell
-									className={`font-bold uppercase ${
-										compareData(apiResponse!.name, userData.name!)
-											? 'bg-green-600'
-											: 'bg-red-600'
-									}`}
-								>
-									{compareData(apiResponse!.name, userData.name!)
-										? 'Yes'
-										: 'No'}
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>Document Number</TableCell>
-								<TableCell>{apiResponse!.docno}</TableCell>
-								<TableCell>{userData.documentId}</TableCell>
-								<TableCell
-									className={`font-bold uppercase ${
-										compareData(apiResponse!.docno, userData.documentId!)
-											? 'bg-green-600'
-											: 'bg-red-600'
-									}`}
-								>
-									{compareData(apiResponse!.docno, userData.documentId!)
-										? 'Yes'
-										: 'No'}
-								</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>Document Type</TableCell>
-								<TableCell>{apiResponse!.type}</TableCell>
-								<TableCell>{userData.documentType}</TableCell>
-								<TableCell
-									className={`font-bold uppercase ${
-										apiResponse!.typematched ? 'bg-green-600' : 'bg-red-600'
-									}`}
-								>
-									{compareData(apiResponse!.name, userData.name!)
-										? 'Yes'
-										: 'No'}
-								</TableCell>
-							</TableRow>
-						</TableBody>
+						<TableBody>{renderTableRows()}</TableBody>
 					</Table>
 				)}
 			</div>
@@ -252,9 +374,7 @@ function Ps1652() {
 			{/* STEP 1 DIALOG */}
 			<Dialog
 				open={dialogs.dialog1}
-				onOpenChange={(open) => {
-					setDialogs({ ...dialogs, dialog1: open });
-				}}
+				onOpenChange={(open) => setDialogs({ ...dialogs, dialog1: open })}
 			>
 				<DialogContent>
 					<DialogHeader>
@@ -310,9 +430,7 @@ function Ps1652() {
 			{/* STEP 2 DIALOG */}
 			<Dialog
 				open={dialogs.dialog2}
-				onOpenChange={(open) => {
-					setDialogs({ ...dialogs, dialog2: open });
-				}}
+				onOpenChange={(open) => setDialogs({ ...dialogs, dialog2: open })}
 			>
 				<DialogContent>
 					<DialogHeader>
@@ -329,19 +447,89 @@ function Ps1652() {
 						/>
 						<Input
 							required
-							placeholder={
-								userData.documentType === 'AadhaarCard'
-									? 'Aadhaar Number'
-									: userData.documentType === 'DriversLicense'
-									? "Driver's License Number"
-									: 'PAN Card Number'
-							}
+							placeholder={"Enter the document number you'd like to verify"}
 							value={userData.documentId ?? ''}
 							onChange={(e) =>
 								setUserData((prev) => ({ ...prev, documentId: e.target.value }))
 							}
 							className='w-full'
 						/>
+						<div className='flex justify-between items-center gap-2'>
+							<div className='flex flex-col'>
+								<span>Day</span>
+								<Input
+									className='w-full'
+									type='number'
+									placeholder='Day'
+									value={dob.day}
+									onChange={(e) => {
+										let value = Number.parseInt(e.target.value);
+
+										if (value > 31) {
+											value = 31;
+										}
+										if (value < 1) {
+											value = 1;
+										}
+
+										setDob((prev) => ({
+											...prev,
+											day: String(value),
+										}));
+									}}
+								/>
+							</div>
+							<div className='flex flex-col'>
+								<span>Month</span>
+								<Input
+									className='w-full'
+									type='number'
+									placeholder='Month'
+									value={dob.month}
+									onChange={(e) => {
+										let value = Number.parseInt(e.target.value);
+
+										if (value > 12) {
+											value = 12;
+										}
+										if (value < 1) {
+											value = 1;
+										}
+
+										setDob((prev) => ({
+											...prev,
+											month: String(value).padStart(2, '0'),
+										}));
+
+										String(dob.month);
+									}}
+								/>
+							</div>
+							<div className='flex flex-col'>
+								<span>Year</span>
+								<Input
+									className='w-full'
+									type='number'
+									placeholder='Year'
+									value={dob.year}
+									onChange={(e) => {
+										let value = Number.parseInt(e.target.value);
+
+										if (value > new Date().getFullYear()) {
+											value = new Date().getFullYear();
+										}
+										if (value < 1) {
+											value = 1;
+										}
+
+										setDob((prev) => ({
+											...prev,
+											year: String(value),
+										}));
+									}}
+								/>
+							</div>
+						</div>
 					</DialogDescription>
 					<DialogFooter className='flex flex-col md:flex-row gap-2'>
 						<Button onClick={handleClearOutput}>Clear</Button>
@@ -359,22 +547,18 @@ function Ps1652() {
 			{/* ERROR DIALOG */}
 			<Dialog
 				open={dialogs.errorDialog}
-				onOpenChange={(open) => {
-					setDialogs({ ...dialogs, errorDialog: open });
-				}}
+				onOpenChange={(open) => setDialogs({ ...dialogs, errorDialog: open })}
 			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Error</DialogTitle>
 					</DialogHeader>
-					<DialogDescription>
-						{error} {/* Display error message */}
-					</DialogDescription>
+					<DialogDescription>{error}</DialogDescription>
 					<DialogFooter>
 						<Button
 							onClick={() => {
 								setDialogs({ ...dialogs, errorDialog: false });
-								setError(null); // Clear error
+								setError(null);
 							}}
 						>
 							Close
