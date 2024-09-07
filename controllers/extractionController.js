@@ -133,6 +133,7 @@ ${ocrText}`;
 Whatever may be the case, output only the RAW, parsable JSON data as described above. 
 
 ONLY include the extracted information in the RAW JSON format.
+ONLY include the fields you are able to extract from the document, else return empty strings.
 
 DO NOT include any markdown formatting. 
 DO NOT include any additional information.
