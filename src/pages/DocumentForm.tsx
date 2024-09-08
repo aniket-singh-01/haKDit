@@ -89,8 +89,6 @@
 
 // export default DocumentForm;
 
-// @ts-expect-error - untyped library
-import React from 'react';
 import { Input } from '@/components/ui/input'; // Adjust import as needed
 import {
 	IAadhaarData,

@@ -1,5 +1,3 @@
-// @ts-expect-error - untyped library
-import React from 'react';
 const LogoSvg = ({
 	size,
 	className,

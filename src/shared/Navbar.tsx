@@ -1,5 +1,3 @@
-// @ts-expect-error - untyped library
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun } from 'lucide-react';
 import { useContext } from 'react';
