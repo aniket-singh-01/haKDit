@@ -1,9 +1,10 @@
 const express = require('express');
-const { processFile } = require('../controllers/extractionController');
+const { processImageFile, processPDFFile } = require('../controllers');
 const { upload } = require('../config/multerConfig');
 
 const router = express.Router();
 
-router.post('/upload', upload, processFile);
+router.post('/upload/pdf', upload, processPDFFile);
+router.post('/upload/img', upload, processImageFile);
 
 module.exports = router;
