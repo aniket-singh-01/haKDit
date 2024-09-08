@@ -7,6 +7,8 @@ const { ChatGroq } = require("@langchain/groq");
 const { PromptTemplate } = require("@langchain/core/prompts");
 const { StructuredOutputParser } = require('@langchain/core/output_parsers');
 
+const { ocrSpace } = require('ocr-space-api-wrapper');
+
 // Global filename and filepath variables
 let filename = '';
 let filepath = '';
@@ -46,8 +48,9 @@ const processImage = async (fileBuffer) => {
 // Perform OCR using Tesseract.js
 const performOCR = async () => {
     try {
-        const result = await tesseract.recognize(filepath, 'eng');
-        return result.data.text; // Return extracted text from OCR
+        // const result = await tesseract.recognize(filepath, 'eng');
+        const result = await ocrSpace(filepath, process.env.SPACE_OCR_KEY);
+        return result.ParsedResults[0].ParsedText; // Return extracted text from OCR
     } catch (error) {
         console.error('Error during OCR:', error);
         throw error;
@@ -173,6 +176,8 @@ Document OCR Output:
 
 // Controller function to handle file upload and process
 const processFile = async (req, res) => {
+    const startTime = Date.now();
+
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
@@ -189,7 +194,11 @@ const processFile = async (req, res) => {
         // Generate prompt and call LangChain API
         const langchainOutput = await generateExtractionPrompt(type, extractedText);
 
-        res.json(langchainOutput);
+        const endTime = Date.now();
+        res.json({
+            ...langchainOutput,
+            executiontime: (endTime - startTime) / 1000,
+        });
     } catch (error) {
         console.error('Error processing file:', error);
         res.status(500).send('Internal Server Error');
