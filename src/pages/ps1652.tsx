@@ -52,12 +52,7 @@ interface IResponse {
 	subjects: string;
 	type: string;
 	typematched: boolean;
-}
-
-interface IDob {
-	day: string;
-	month: string;
-	year: string;
+	executiontime: number;
 }
 
 function Ps1652() {
@@ -66,11 +61,7 @@ function Ps1652() {
 		documentId: null,
 		documentType: null,
 	});
-	const [dob, setDob] = useState<IDob>({
-		day: '1',
-		month: '1',
-		year: '2000',
-	});
+	const [dob, setDob] = useState<string>('');
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [apiResponse, setApiResponse] = useState<IResponse | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -114,11 +105,7 @@ function Ps1652() {
 			documentType: null,
 			dob: null,
 		}));
-		setDob({
-			day: '1',
-			month: '1',
-			year: '2000',
-		});
+		setDob('');
 		setSelectedFile(null);
 		setApiResponse(null);
 		setError(null);
@@ -142,7 +129,6 @@ function Ps1652() {
 				verified: compareData(apiResponse?.name ?? '', userData.name ?? ''),
 			},
 
-			// Add document type-specific fields here
 			...(userData.documentType === 'AadhaarCard'
 				? [
 						{
@@ -157,11 +143,12 @@ function Ps1652() {
 						{
 							field: 'Date of Birth',
 							apiValue: apiResponse!.dob,
-							userValue: `${dob.day}-${dob.month}-${dob.year}`,
+							userValue: dob,
 							verified:
 								String(apiResponse!.dob)
 									.replaceAll('/', '')
-									.replaceAll('-', '') === `${dob.day}${dob.month}${dob.year}`,
+									.replaceAll('-', '') ===
+								dob.replaceAll('/', '').replaceAll('-', ''),
 						},
 				  ]
 				: []),
@@ -298,26 +285,11 @@ function Ps1652() {
 
 	return (
 		<>
-			<div className='container mx-auto flex flex-col justify-center items-center px-5'>
+			<div className='container max-w-[95vh] mx-auto flex flex-col justify-center items-center px-5'>
 				<Helmet>
 					<title>haKDit | PS1652</title>
 				</Helmet>
 				<div className='w-full py-4 border rounded flex flex-col md:flex-row justify-evenly items-center gap-5'>
-					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
-						<div
-							className={`${
-								userData.documentId !== null && userData.name !== null
-									? 'bg-green-600'
-									: 'bg-red-600'
-							} size-5 rounded-full`}
-						/>
-						<p
-							onClick={() => setDialogs({ ...dialogs, dialog2: true })}
-							className='underline text-blue-400 cursor-pointer'
-						>
-							Enter data
-						</p>
-					</div>
 					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
 						<div
 							className={`${
@@ -336,6 +308,22 @@ function Ps1652() {
 					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
 						<div
 							className={`${
+								userData.documentId !== null && userData.name !== null
+									? 'bg-green-600'
+									: 'bg-red-600'
+							} size-5 rounded-full`}
+						/>
+						<p
+							onClick={() => setDialogs({ ...dialogs, dialog2: true })}
+							className='underline text-blue-400 cursor-pointer'
+						>
+							Enter data
+						</p>
+					</div>
+
+					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
+						<div
+							className={`${
 								apiResponse === null ? 'bg-red-600' : 'bg-green-600'
 							} size-5 rounded-full`}
 						/>
@@ -347,28 +335,45 @@ function Ps1652() {
 						</p>
 					</div>
 				</div>
-				{showApiResponse && apiResponse !== null && (
-					<pre className='w-full mt-5'>
-						{JSON.stringify(apiResponse, null, 2)}
-					</pre>
-				)}
-				{showApiResponse && apiResponse !== null && (
-					<Table>
-						<TableCaption>
-							This table shows if the data you entered matches the data in the
-							API response
-						</TableCaption>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Field</TableHead>
-								<TableHead>API Response</TableHead>
-								<TableHead>Your data</TableHead>
-								<TableHead>Verified?</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>{renderTableRows()}</TableBody>
-					</Table>
-				)}
+				{showApiResponse &&
+					apiResponse !== null &&
+					userData.documentId !== null &&
+					userData.documentType !== null &&
+					userData.name !== null && (
+						<pre className='w-full my-5 overflow-y-auto'>
+							{JSON.stringify(apiResponse, null, 2)}
+						</pre>
+					)}
+				{showApiResponse &&
+					apiResponse !== null &&
+					userData.documentId !== null &&
+					userData.documentType !== null &&
+					userData.name !== null && (
+						<>
+							<Table>
+								<TableCaption>
+									This table shows if the data you entered matches the data in
+									the API response
+								</TableCaption>
+								<TableHeader>
+									<TableRow>
+										<TableHead>Field</TableHead>
+										<TableHead>API Response</TableHead>
+										<TableHead>Your data</TableHead>
+										<TableHead>Verified?</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>{renderTableRows()}</TableBody>
+							</Table>
+							<span>
+								Latest execution time:{' '}
+								<span className='font-bold underline'>
+									{apiResponse.executiontime}
+								</span>{' '}
+								seconds
+							</span>
+						</>
+					)}
 			</div>
 
 			{/* STEP 1 DIALOG */}
@@ -455,80 +460,13 @@ function Ps1652() {
 							className='w-full'
 						/>
 						<div className='flex justify-between items-center gap-2'>
-							<div className='flex flex-col'>
-								<span>Day</span>
-								<Input
-									className='w-full'
-									type='number'
-									placeholder='Day'
-									value={dob.day}
-									onChange={(e) => {
-										let value = Number.parseInt(e.target.value);
-
-										if (value > 31) {
-											value = 31;
-										}
-										if (value < 1) {
-											value = 1;
-										}
-
-										setDob((prev) => ({
-											...prev,
-											day: String(value),
-										}));
-									}}
-								/>
-							</div>
-							<div className='flex flex-col'>
-								<span>Month</span>
-								<Input
-									className='w-full'
-									type='number'
-									placeholder='Month'
-									value={dob.month}
-									onChange={(e) => {
-										let value = Number.parseInt(e.target.value);
-
-										if (value > 12) {
-											value = 12;
-										}
-										if (value < 1) {
-											value = 1;
-										}
-
-										setDob((prev) => ({
-											...prev,
-											month: String(value).padStart(2, '0'),
-										}));
-
-										String(dob.month);
-									}}
-								/>
-							</div>
-							<div className='flex flex-col'>
-								<span>Year</span>
-								<Input
-									className='w-full'
-									type='number'
-									placeholder='Year'
-									value={dob.year}
-									onChange={(e) => {
-										let value = Number.parseInt(e.target.value);
-
-										if (value > new Date().getFullYear()) {
-											value = new Date().getFullYear();
-										}
-										if (value < 1) {
-											value = 1;
-										}
-
-										setDob((prev) => ({
-											...prev,
-											year: String(value),
-										}));
-									}}
-								/>
-							</div>
+							<Input
+								className='w-full'
+								type='text'
+								placeholder='Date of birth (DD/MM/YYYY)'
+								value={dob}
+								onChange={(e) => setDob(e.target.value)}
+							/>
 						</div>
 					</DialogDescription>
 					<DialogFooter className='flex flex-col md:flex-row gap-2'>
