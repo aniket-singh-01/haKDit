@@ -233,6 +233,15 @@ function Ps1652() {
 								userData.documentId ?? ''
 							),
 						},
+						{
+							field: 'Disability Percentage',
+							apiValue: apiResponse!.disabilitypercentage,
+							userValue: userData.documentId,
+							verified: compareData(
+								apiResponse!.disabilitypercentage ?? '',
+								userData.documentId ?? ''
+							),
+						},
 				  ]
 				: []),
 			...(userData.documentType === 'GenericDocument'
