@@ -11,7 +11,7 @@
 		"server": "cd server && pnpm dev"
 	},
 	"engines": {
-		"node": ">=16.0.0"
+		"node": "20.x"
 	},
 	"dependencies": {
 		"@radix-ui/react-dialog": "^1.1.1",
