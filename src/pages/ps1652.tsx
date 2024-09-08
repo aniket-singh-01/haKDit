@@ -19,52 +19,80 @@ import {
 import axios from 'axios';
 import Helmet from 'react-helmet';
 import {
-	Table,
-	TableBody,
-	TableCaption,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
-interface IUserData {
-	name: string | null;
-	documentId: string | null;
-	documentType: string | null;
-}
-interface IDialogs {
-	dialog1: boolean;
-	dialog2: boolean;
-	dialog3: boolean;
-	errorDialog: boolean;
-}
-interface IResponse {
-	address: string;
-	disabilitypercentage: string;
-	disabilitytype: string;
-	dob: string;
-	docno: string;
-	gender: string;
-	incomedetails: string;
-	language: string;
-	name: string;
-	otherdata: string;
-	subjects: string;
-	type: string;
-	typematched: boolean;
-	executiontime: number;
-}
+	IAadhaarData,
+	ICasteCertData,
+	IDialogs,
+	IEwsData,
+	IGateScoreData,
+	IPanData,
+	IPwdData,
+	IResponse,
+} from '@/types';
+import DocumentTable from './DocumentTable';
+import DocumentForm from './DocumentForm';
 
 function Ps1652() {
-	const [userData, setUserData] = useState<IUserData>({
+	const [selectedDocType, setSelectedDocType] = useState<string>('aadhaar');
+	const [aadhaarData, setAadhaarData] = useState<IAadhaarData>({
 		name: null,
-		documentId: null,
-		documentType: null,
+		dob: null,
+		docno: null,
+		gender: null,
 	});
-	const [dob, setDob] = useState<string>('');
+	const [panData, setPanData] = useState<IPanData>({
+		name: null,
+		dob: null,
+		docno: null,
+		fathername: null,
+	});
+	const [ewsData, setEwsData] = useState<IEwsData>({
+		name: null,
+		docno: null,
+		certno: null,
+		dateofissue: null,
+		validtill: null,
+		income: null,
+		caste: null,
+		address: null,
+		fathername: null,
+	});
+	const [pwdData, setPwdData] = useState<IPwdData>({
+		name: null,
+		certno: null,
+		dateofissue: null,
+		dob: null,
+		gender: null,
+		regno: null,
+		address: null,
+		disabilitypercentage: null,
+		disabilitytype: null,
+		fathername: null,
+	});
+	const [casteCertData, setCasteCertData] = useState<ICasteCertData>({
+		name: null,
+		certno: null,
+		fathername: null,
+		address: null,
+		caste: null,
+	});
+	const [gateScoreData, setGateScoreData] = useState<IGateScoreData>({
+		name: null,
+		parentname: null,
+		regno: null,
+		dob: null,
+		exampaper: null,
+		gatescore: null,
+		marks: null,
+		air: null,
+		validupto: null,
+		qualifyingmarks: null,
+		caste: null,
+	});
+
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [apiResponse, setApiResponse] = useState<IResponse | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const [executionTime, setExecutionTime] = useState<number | null>(null);
 	const [dialogs, setDialogs] = useState<IDialogs>({
 		dialog1: false,
 		dialog2: false,
@@ -75,22 +103,98 @@ function Ps1652() {
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
+	const clearAllData = () => {
+		setAadhaarData({
+			name: null,
+			dob: null,
+			docno: null,
+			gender: null,
+		});
+		setPanData({
+			name: null,
+			dob: null,
+			docno: null,
+			fathername: null,
+		});
+		setEwsData({
+			name: null,
+			docno: null,
+			certno: null,
+			dateofissue: null,
+			validtill: null,
+			income: null,
+			caste: null,
+			address: null,
+			fathername: null,
+		});
+		setPwdData({
+			name: null,
+			certno: null,
+			dateofissue: null,
+			dob: null,
+			gender: null,
+			regno: null,
+			address: null,
+			disabilitypercentage: null,
+			disabilitytype: null,
+			fathername: null,
+		});
+		setCasteCertData({
+			name: null,
+			certno: null,
+			fathername: null,
+			address: null,
+			caste: null,
+		});
+		setGateScoreData({
+			name: null,
+			parentname: null,
+			regno: null,
+			dob: null,
+			exampaper: null,
+			gatescore: null,
+			marks: null,
+			air: null,
+			validupto: null,
+			qualifyingmarks: null,
+			caste: null,
+		});
+	};
+
 	const handleGenerateOutput = async () => {
 		setShowApiResponse(false);
 
 		const formData = new FormData();
 		formData.append('file', selectedFile!);
-		formData.append('type', userData.documentType!);
+		formData.append('type', selectedDocType);
 
 		try {
 			const response = await axios.post(
-				`${import.meta.env.VITE_BASE_URL}/api/upload`,
+				selectedFile!.type.includes('image')
+					? `${import.meta.env.VITE_BASE_URL}/api/upload/img`
+					: `${import.meta.env.VITE_BASE_URL}/api/upload/pdf`,
 				formData
 			);
 
-			setApiResponse(response.data);
-
+			setApiResponse(JSON.parse(response.data.choices[0].message.content));
 			console.log(response.data);
+
+			console.info(
+				`[GROQ]   Input token      : ${response.data.usage.prompt_tokens}`
+			);
+			console.info(
+				`[GROQ]   Output token     : ${response.data.usage.completion_tokens}`
+			);
+			console.info(
+				`[GROQ]   Total tokens     : ${response.data.usage.total_tokens}`
+			);
+			console.info(
+				`[GROQ]   Total time       : ${response.data.usage.total_time}`
+			);
+			console.info(
+				`[SERVER] Execution time   : ${response.data.executiontime}`
+			);
+			setExecutionTime(response.data.executiontime);
 		} catch (err) {
 			console.error(err);
 			setError('Error occurred while processing the file. Please try again.');
@@ -99,197 +203,13 @@ function Ps1652() {
 	};
 
 	const handleClearOutput = () => {
-		setUserData(() => ({
-			name: null,
-			documentId: null,
-			documentType: null,
-			dob: null,
-		}));
-		setDob('');
+		clearAllData();
 		setSelectedFile(null);
 		setApiResponse(null);
 		setError(null);
 		if (fileInputRef.current) {
 			fileInputRef.current.value = '';
 		}
-	};
-
-	const compareData = (orig: string, supp: string): boolean => {
-		const processedOrig = orig.toLowerCase().replaceAll(' ', '');
-		const processedSupp = supp.toLowerCase().replaceAll(' ', '');
-		return processedOrig === processedSupp;
-	};
-
-	const renderTableRows = () => {
-		const rows = [
-			{
-				field: 'Name',
-				apiValue: apiResponse?.name,
-				userValue: userData.name,
-				verified: compareData(apiResponse?.name ?? '', userData.name ?? ''),
-			},
-
-			...(userData.documentType === 'AadhaarCard'
-				? [
-						{
-							field: 'Aadhaar Number',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-						{
-							field: 'Date of Birth',
-							apiValue: apiResponse!.dob,
-							userValue: dob,
-							verified:
-								String(apiResponse!.dob)
-									.replaceAll('/', '')
-									.replaceAll('-', '') ===
-								dob.replaceAll('/', '').replaceAll('-', ''),
-						},
-				  ]
-				: []),
-			...(userData.documentType === 'DriversLicense'
-				? [
-						{
-							field: 'License Number',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-						{
-							field: 'Expiry Date',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-				  ]
-				: []),
-			...(userData.documentType === 'PANCard'
-				? [
-						{
-							field: 'PAN Number',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-				  ]
-				: []),
-			...(userData.documentType === 'Marksheet'
-				? [
-						{
-							field: 'Roll Number',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-						{
-							field: 'Institution Name',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-				  ]
-				: []),
-			...(userData.documentType === 'EWSCertificate'
-				? [
-						{
-							field: 'EWS Number',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-				  ]
-				: []),
-			...(userData.documentType === 'PWD_Certificate'
-				? [
-						{
-							field: 'PWD Number',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-						{
-							field: 'Disability Percentage',
-							apiValue: apiResponse!.disabilitypercentage,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.disabilitypercentage ?? '',
-								userData.documentId ?? ''
-							),
-						},
-				  ]
-				: []),
-			...(userData.documentType === 'GenericDocument'
-				? [
-						{
-							field: 'PWD Number',
-							apiValue: apiResponse!.docno,
-							userValue: userData.documentId,
-							verified: compareData(
-								apiResponse!.docno ?? '',
-								userData.documentId ?? ''
-							),
-						},
-				  ]
-				: []),
-			{
-				field: 'Document Type',
-				apiValue: apiResponse?.type,
-				userValue: userData.documentType,
-				verified: apiResponse?.typematched ?? false,
-			},
-		];
-		// Filter rows based on document type
-		const filteredRows = rows.filter(() => {
-			if (userData.documentType === 'AadhaarCard') return true;
-			if (userData.documentType === 'DriversLicense') return true;
-			if (userData.documentType === 'PANCard') return true;
-			if (userData.documentType === 'Marksheet') return true;
-			if (userData.documentType === 'EWSCertificate') return true;
-			if (userData.documentType === 'PWD_Certificate') return true;
-			if (userData.documentType === 'GenericDocument') return true;
-			return false;
-		});
-
-		return filteredRows.map((row) => (
-			<TableRow key={row.field}>
-				<TableCell>{row.field}</TableCell>
-				<TableCell>{row.apiValue}</TableCell>
-				<TableCell>{row.userValue}</TableCell>
-				<TableCell
-					className={`font-bold uppercase ${
-						row.verified ? 'bg-green-600' : 'bg-red-600'
-					}`}
-				>
-					{row.verified ? 'Yes' : 'No'}
-				</TableCell>
-			</TableRow>
-		));
 	};
 
 	return (
@@ -300,13 +220,7 @@ function Ps1652() {
 				</Helmet>
 				<div className='w-full py-4 border rounded flex flex-col md:flex-row justify-evenly items-center gap-5'>
 					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
-						<div
-							className={`${
-								userData.documentType === null && selectedFile === null
-									? 'bg-red-600'
-									: 'bg-green-600'
-							} size-5 rounded-full`}
-						/>
+						<div className='bg-blue-600 size-5 rounded-full' />
 						<p
 							className='underline text-blue-400 cursor-pointer'
 							onClick={() => setDialogs({ ...dialogs, dialog1: true })}
@@ -315,13 +229,7 @@ function Ps1652() {
 						</p>
 					</div>
 					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
-						<div
-							className={`${
-								userData.documentId !== null && userData.name !== null
-									? 'bg-green-600'
-									: 'bg-red-600'
-							} size-5 rounded-full`}
-						/>
+						<div className='bg-blue-600 size-5 rounded-full' />
 						<p
 							onClick={() => setDialogs({ ...dialogs, dialog2: true })}
 							className='underline text-blue-400 cursor-pointer'
@@ -331,11 +239,7 @@ function Ps1652() {
 					</div>
 
 					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
-						<div
-							className={`${
-								apiResponse === null ? 'bg-red-600' : 'bg-green-600'
-							} size-5 rounded-full`}
-						/>
+						<div className='bg-blue-600 size-5 rounded-full' />
 						<p
 							onClick={() => setShowApiResponse(true)}
 							className='underline text-blue-400 cursor-pointer'
@@ -344,45 +248,36 @@ function Ps1652() {
 						</p>
 					</div>
 				</div>
-				{showApiResponse &&
-					apiResponse !== null &&
-					userData.documentId !== null &&
-					userData.documentType !== null &&
-					userData.name !== null && (
-						<pre className='w-full my-5 overflow-y-auto'>
-							{JSON.stringify(apiResponse, null, 2)}
-						</pre>
-					)}
-				{showApiResponse &&
-					apiResponse !== null &&
-					userData.documentId !== null &&
-					userData.documentType !== null &&
-					userData.name !== null && (
-						<>
-							<Table>
-								<TableCaption>
-									This table shows if the data you entered matches the data in
-									the API response
-								</TableCaption>
-								<TableHeader>
-									<TableRow>
-										<TableHead>Field</TableHead>
-										<TableHead>API Response</TableHead>
-										<TableHead>Your data</TableHead>
-										<TableHead>Verified?</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>{renderTableRows()}</TableBody>
-							</Table>
-							<span>
-								Latest execution time:{' '}
-								<span className='font-bold underline'>
-									{apiResponse.executiontime}
-								</span>{' '}
-								seconds
-							</span>
-						</>
-					)}
+				{showApiResponse && apiResponse !== null && (
+					<pre className='w-full my-5 overflow-y-auto'>
+						{JSON.stringify(apiResponse, null, 2)}
+					</pre>
+				)}
+				{showApiResponse && apiResponse !== null && (
+					<>
+						<DocumentTable
+							apiResponse={apiResponse}
+							type={selectedDocType}
+							aadhaarData={aadhaarData}
+							panData={panData}
+							ewsData={ewsData}
+							pwdData={pwdData}
+							casteCertData={casteCertData}
+							gateScoreData={gateScoreData}
+							setAadhaarData={setAadhaarData}
+							setPanData={setPanData}
+							setEwsData={setEwsData}
+							setPwdData={setPwdData}
+							setCasteCertData={setCasteCertData}
+							setGateScoreData={setGateScoreData}
+						/>
+						<span>
+							Latest execution time:{' '}
+							<span className='font-bold underline'>{executionTime}</span>
+							seconds
+						</span>
+					</>
+				)}
 			</div>
 
 			{/* STEP 1 DIALOG */}
@@ -400,13 +295,13 @@ function Ps1652() {
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
 								setSelectedFile(e.target.files![0]);
 							}}
-							accept='image/*,.pdf'
+							accept='image/*, application/pdf'
 						/>
 						<Select
 							defaultValue='AadhaarCard'
-							value={userData.documentType!}
+							value={selectedDocType}
 							onValueChange={(value) => {
-								setUserData((prev) => ({ ...prev, documentType: value }));
+								setSelectedDocType(value);
 							}}
 							required
 						>
@@ -414,17 +309,13 @@ function Ps1652() {
 								<SelectValue placeholder='Select document type' />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value='AadhaarCard'>Aadhaar Card</SelectItem>
-								<SelectItem value='DriversLicense'>
-									Driver&apos;s License
-								</SelectItem>
-								<SelectItem value='PANCard'>PAN Card</SelectItem>
-								<SelectItem value='Marksheet'>Marksheet</SelectItem>
-								<SelectItem value='EWSCertificate'>EWS Certificate</SelectItem>
-								<SelectItem value='PWD_Certificate'>PWD Certificate</SelectItem>
-								<SelectItem value='GenericDocument'>
-									Generic Document
-								</SelectItem>
+								<SelectItem value='aadhaar'>Aadhaar card</SelectItem>
+								<SelectItem value='pan'>PAN card</SelectItem>
+								<SelectItem value='ews'>EWS certificate</SelectItem>
+								<SelectItem value='pwd'>PWD certificate</SelectItem>
+								<SelectItem value='caste'>Caste certificate</SelectItem>
+								<SelectItem value='gate'>GATE scorecard</SelectItem>
+								<SelectItem value='generic'></SelectItem>
 							</SelectContent>
 						</Select>
 					</DialogDescription>
@@ -451,32 +342,21 @@ function Ps1652() {
 						<DialogTitle>Enter your data</DialogTitle>
 					</DialogHeader>
 					<DialogDescription className='flex flex-col gap-3'>
-						<Input
-							placeholder='Name'
-							value={userData.name ?? ''}
-							onChange={(e) =>
-								setUserData((prev) => ({ ...prev, name: e.target.value }))
-							}
-							className='w-full'
+						<DocumentForm
+							aadhaarData={aadhaarData}
+							setAadhaarData={setAadhaarData}
+							panData={panData}
+							setPanData={setPanData}
+							ewsData={ewsData}
+							setEwsData={setEwsData}
+							pwdData={pwdData}
+							setPwdData={setPwdData}
+							casteCertData={casteCertData}
+							setCasteCertData={setCasteCertData}
+							gateScoreData={gateScoreData}
+							setGateScoreData={setGateScoreData}
+							type={selectedDocType}
 						/>
-						<Input
-							required
-							placeholder={"Enter the document number you'd like to verify"}
-							value={userData.documentId ?? ''}
-							onChange={(e) =>
-								setUserData((prev) => ({ ...prev, documentId: e.target.value }))
-							}
-							className='w-full'
-						/>
-						<div className='flex justify-between items-center gap-2'>
-							<Input
-								className='w-full'
-								type='text'
-								placeholder='Date of birth (DD/MM/YYYY)'
-								value={dob}
-								onChange={(e) => setDob(e.target.value)}
-							/>
-						</div>
 					</DialogDescription>
 					<DialogFooter className='flex flex-col md:flex-row gap-2'>
 						<Button onClick={handleClearOutput}>Clear</Button>
