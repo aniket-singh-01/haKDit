@@ -1,3 +1,5 @@
+// @ts-expect-error - untyped library
+import React from 'react';
 const LogoSvg = ({
 	size,
 	className,
@@ -17,10 +19,9 @@ const LogoSvg = ({
 			width={size}
 			height={size}
 			viewBox='0 0 256 256'
-			style={{
-				// @ts-ignore
-				enableBackground: 'new 0 0 256 256',
-			}}
+			// style={{
+			// 	: 'new 0 0 256 256',
+			// }}
 			xmlSpace='preserve'
 		>
 			<rect

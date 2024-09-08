@@ -24,14 +24,6 @@ export interface IEwsData {
 	fathername: string | null;
 }
 
-export type IResponse =
-	| IAadhaarData
-	| IPanData
-	| IEwsData
-	| IPwdData
-	| ICasteCertData
-	| IGateScoreData;
-
 export interface IPwdData {
 	name: string | null;
 	certno: string | null;
@@ -67,6 +59,29 @@ export interface IGateScoreData {
 	caste: string | null;
 }
 
+export interface IResponse {
+	name?: string | null;
+	dob?: string | null;
+	docno?: string | null;
+	gender?: string | null;
+	fathername?: string | null;
+	certno?: string | null;
+	dateofissue?: string | null;
+	validtill?: string | null;
+	income?: string | null;
+	caste?: string | null;
+	address?: string | null;
+	regno?: string | null;
+	disabilitypercentage?: string | null;
+	disabilitytype?: string | null;
+	parentname?: string | null;
+	exampaper?: string | null;
+	gatescore?: string | null;
+	marks?: string | null;
+	air?: string | null;
+	validupto?: string | null;
+	qualifyingmarks?: string | null;
+}
 export interface IUserData {
 	name: string | null;
 	documentId: string | null;

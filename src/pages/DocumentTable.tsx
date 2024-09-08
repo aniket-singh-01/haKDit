@@ -1,3 +1,4 @@
+import React from 'react';
 import {
 	Table,
 	TableBody,
@@ -14,16 +15,11 @@ import {
 	IGateScoreData,
 	IPanData,
 	IPwdData,
+	IResponse,
 } from '@/types'; // Adjust import as needed
 
 interface DocumentTableProps {
-	apiResponse:
-		| IAadhaarData
-		| IPanData
-		| IEwsData
-		| IPwdData
-		| ICasteCertData
-		| IGateScoreData;
+	apiResponse: IResponse;
 	type: string;
 	aadhaarData: IAadhaarData;
 	panData: IPanData;
@@ -31,12 +27,6 @@ interface DocumentTableProps {
 	pwdData: IPwdData;
 	casteCertData: ICasteCertData;
 	gateScoreData: IGateScoreData;
-	setAadhaarData: (data: IAadhaarData) => void;
-	setPanData: (data: IPanData) => void;
-	setEwsData: (data: IEwsData) => void;
-	setPwdData: (data: IPwdData) => void;
-	setCasteCertData: (data: ICasteCertData) => void;
-	setGateScoreData: (data: IGateScoreData) => void;
 }
 
 const DocumentTable = ({
@@ -48,12 +38,6 @@ const DocumentTable = ({
 	pwdData,
 	casteCertData,
 	gateScoreData,
-	setAadhaarData,
-	setPanData,
-	setEwsData,
-	setPwdData,
-	setCasteCertData,
-	setGateScoreData,
 }: DocumentTableProps) => {
 	const compareData = (apiData: string | null, userData: string | null) => {
 		return apiData?.toLowerCase().replaceAll(' ', '') ===
@@ -87,7 +71,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>{aadhaarData.name}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.name, aadhaarData.name)}
+								{compareData(apiResponse.name!, aadhaarData.name)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -95,7 +79,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.dob}</TableCell>
 							<TableCell>{aadhaarData.dob}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.dob, aadhaarData.dob)}
+								{compareData(apiResponse.dob!, aadhaarData.dob)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -103,7 +87,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.docno}</TableCell>
 							<TableCell>{aadhaarData.docno}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.docno, aadhaarData.docno)}
+								{compareData(apiResponse.docno!, aadhaarData.docno)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -111,7 +95,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.gender}</TableCell>
 							<TableCell>{aadhaarData.gender}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.gender, aadhaarData.gender)}
+								{compareData(apiResponse.gender!, aadhaarData.gender)}
 							</TableCell>
 						</TableRow>
 					</TableBody>
@@ -138,29 +122,31 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.name, panData.name)}
+								{compareData(apiResponse.name!, panData.name)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>Date of Birth</TableCell>
 							<TableCell>{apiResponse.dob}</TableCell>
 							<TableCell>{panData.dob}</TableCell>
-							<TableCell>{compareData(apiResponse.dob, panData.dob)}</TableCell>
+							<TableCell>
+								{compareData(apiResponse.dob!, panData.dob)}
+							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>Document Number</TableCell>
 							<TableCell>{apiResponse.docno}</TableCell>
 							<TableCell>{panData.docno}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.docno, panData.docno)}
+								{compareData(apiResponse.docno!, panData.docno)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
-							<TableCell>Father's Name</TableCell>
+							<TableCell>Father&apos;s Name</TableCell>
 							<TableCell>{apiResponse.fathername}</TableCell>
 							<TableCell>{panData.fathername}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.fathername, panData.fathername)}
+								{compareData(apiResponse.fathername!, panData.fathername)}
 							</TableCell>
 						</TableRow>
 					</TableBody>
@@ -187,7 +173,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.name, ewsData.name)}
+								{compareData(apiResponse.name!, ewsData.name)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -195,7 +181,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.docno}</TableCell>
 							<TableCell>{ewsData.docno}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.docno, ewsData.docno)}
+								{compareData(apiResponse.docno!, ewsData.docno)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -203,15 +189,15 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.certno}</TableCell>
 							<TableCell>{ewsData.certno}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.certno, ewsData.certno)}
+								{compareData(apiResponse.certno!, ewsData.certno)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>Date of Issue</TableCell>
-							<TableCell>{apiResponse.date}</TableCell>
-							<TableCell>{ewsData.date}</TableCell>
+							<TableCell>{apiResponse.dateofissue}</TableCell>
+							<TableCell>{ewsData.dateofissue}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.date, ewsData.date)}
+								{compareData(apiResponse.dateofissue!, ewsData.dateofissue)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -219,7 +205,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.validtill}</TableCell>
 							<TableCell>{ewsData.validtill}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.validtill, ewsData.validtill)}
+								{compareData(apiResponse.validtill!, ewsData.validtill)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -227,7 +213,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.income}</TableCell>
 							<TableCell>{ewsData.income}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.income, ewsData.income)}
+								{compareData(apiResponse.income!, ewsData.income)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -235,7 +221,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.caste}</TableCell>
 							<TableCell>{ewsData.caste}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.caste, ewsData.caste)}
+								{compareData(apiResponse.caste!, ewsData.caste)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -243,15 +229,15 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.address}</TableCell>
 							<TableCell>{ewsData.address}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.address, ewsData.address)}
+								{compareData(apiResponse.address!, ewsData.address)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
-							<TableCell>Father's name</TableCell>
+							<TableCell>Father&apos;s name</TableCell>
 							<TableCell>{apiResponse.fathername}</TableCell>
 							<TableCell>{ewsData.fathername}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.fathername, ewsData.fathername)}
+								{compareData(apiResponse.fathername!, ewsData.fathername)}
 							</TableCell>
 						</TableRow>
 					</TableBody>
@@ -278,7 +264,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.name, pwdData.name)}
+								{compareData(apiResponse.name!, pwdData.name)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -286,29 +272,31 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.certno}</TableCell>
 							<TableCell>{pwdData.certno}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.certno, pwdData.certno)}
+								{compareData(apiResponse.certno!, pwdData.certno)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>Date of Issue</TableCell>
-							<TableCell>{apiResponse.date}</TableCell>
+							<TableCell>{apiResponse.dateofissue}</TableCell>
 							<TableCell>{pwdData.dateofissue}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.date, pwdData.dateofissue)}
+								{compareData(apiResponse.dateofissue!, pwdData.dateofissue)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>Date of Birth</TableCell>
 							<TableCell>{apiResponse.dob}</TableCell>
 							<TableCell>{pwdData.dob}</TableCell>
-							<TableCell>{compareData(apiResponse.dob, pwdData.dob)}</TableCell>
+							<TableCell>
+								{compareData(apiResponse.dob!, pwdData.dob)}
+							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>Gender</TableCell>
 							<TableCell>{apiResponse.gender}</TableCell>
 							<TableCell>{pwdData.gender}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.gender, pwdData.gender)}
+								{compareData(apiResponse.gender!, pwdData.gender)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -316,7 +304,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.regno}</TableCell>
 							<TableCell>{pwdData.regno}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.regno, pwdData.regno)}
+								{compareData(apiResponse.regno!, pwdData.regno)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -324,15 +312,15 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.address}</TableCell>
 							<TableCell>{pwdData.address}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.address, pwdData.address)}
+								{compareData(apiResponse.address!, pwdData.address)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
-							<TableCell>Father's Name</TableCell>
+							<TableCell>Father&apos;s Name</TableCell>
 							<TableCell>{apiResponse.fathername}</TableCell>
 							<TableCell>{pwdData.fathername}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.fathername, pwdData.fathername)}
+								{compareData(apiResponse.fathername!, pwdData.fathername)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -341,7 +329,7 @@ const DocumentTable = ({
 							<TableCell>{pwdData.disabilitypercentage}</TableCell>
 							<TableCell>
 								{compareData(
-									apiResponse.disabilitypercentage,
+									apiResponse.disabilitypercentage!,
 									pwdData.disabilitypercentage
 								)}
 							</TableCell>
@@ -352,7 +340,7 @@ const DocumentTable = ({
 							<TableCell>{pwdData.disabilitytype}</TableCell>
 							<TableCell>
 								{compareData(
-									apiResponse.disabilitytype,
+									apiResponse.disabilitytype!,
 									pwdData.disabilitytype
 								)}
 							</TableCell>
@@ -381,7 +369,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>{casteCertData.name}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.name, casteCertData.name)}
+								{compareData(apiResponse.name!, casteCertData.name)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -389,15 +377,15 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.certno}</TableCell>
 							<TableCell>{casteCertData.certno}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.certno, casteCertData.certno)}
+								{compareData(apiResponse.certno!, casteCertData.certno)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
-							<TableCell>Father's Name</TableCell>
+							<TableCell>Father&apos;s Name</TableCell>
 							<TableCell>{apiResponse.fathername}</TableCell>
 							<TableCell>{casteCertData.fathername}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.fathername, casteCertData.fathername)}
+								{compareData(apiResponse.fathername!, casteCertData.fathername)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -405,7 +393,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.caste}</TableCell>
 							<TableCell>{casteCertData.caste}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.caste, casteCertData.caste)}
+								{compareData(apiResponse.caste!, casteCertData.caste)}
 							</TableCell>
 						</TableRow>
 					</TableBody>
@@ -432,7 +420,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.name}</TableCell>
 							<TableCell>{gateScoreData.name}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.name, gateScoreData.name)}
+								{compareData(apiResponse.name!, gateScoreData.name)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -440,7 +428,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.parentname}</TableCell>
 							<TableCell>{gateScoreData.parentname}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.parentname, gateScoreData.parentname)}
+								{compareData(apiResponse.parentname!, gateScoreData.parentname)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -448,7 +436,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.regno}</TableCell>
 							<TableCell>{gateScoreData.regno}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.regno, gateScoreData.regno)}
+								{compareData(apiResponse.regno!, gateScoreData.regno)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -456,7 +444,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.dob}</TableCell>
 							<TableCell>{gateScoreData.dob}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.dob, gateScoreData.dob)}
+								{compareData(apiResponse.dob!, gateScoreData.dob)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -464,7 +452,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.exampaper}</TableCell>
 							<TableCell>{gateScoreData.exampaper}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.exampaper, gateScoreData.exampaper)}
+								{compareData(apiResponse.exampaper!, gateScoreData.exampaper)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -472,7 +460,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.gatescore}</TableCell>
 							<TableCell>{gateScoreData.gatescore}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.gatescore, gateScoreData.gatescore)}
+								{compareData(apiResponse.gatescore!, gateScoreData.gatescore)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -480,7 +468,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.marks}</TableCell>
 							<TableCell>{gateScoreData.marks}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.marks, gateScoreData.marks)}
+								{compareData(apiResponse.marks!, gateScoreData.marks)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -488,7 +476,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.air}</TableCell>
 							<TableCell>{gateScoreData.air}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.air, gateScoreData.air)}
+								{compareData(apiResponse.air!, gateScoreData.air)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -496,7 +484,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.validupto}</TableCell>
 							<TableCell>{gateScoreData.validupto}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.validupto, gateScoreData.validupto)}
+								{compareData(apiResponse.validupto!, gateScoreData.validupto)}
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -505,7 +493,7 @@ const DocumentTable = ({
 							<TableCell>{gateScoreData.qualifyingmarks}</TableCell>
 							<TableCell>
 								{compareData(
-									apiResponse.qualifyingmarks,
+									apiResponse.qualifyingmarks!,
 									gateScoreData.qualifyingmarks
 								)}
 							</TableCell>
@@ -515,7 +503,7 @@ const DocumentTable = ({
 							<TableCell>{apiResponse.caste}</TableCell>
 							<TableCell>{gateScoreData.caste}</TableCell>
 							<TableCell>
-								{compareData(apiResponse.caste, gateScoreData.caste)}
+								{compareData(apiResponse.caste!, gateScoreData.caste)}
 							</TableCell>
 						</TableRow>
 					</TableBody>

@@ -1,3 +1,5 @@
+// @ts-expect-error - untyped library
+import React from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from './shared/Navbar';
 import Ps1652 from './pages/ps1652';

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -35,7 +36,6 @@ const DialogComponent = ({
 	onSubmit,
 	error,
 	formComponent,
-	selectedDocType,
 	setSelectedDocType,
 	setSelectedFile,
 	fileInputRef,

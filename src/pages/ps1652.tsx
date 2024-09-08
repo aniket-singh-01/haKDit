@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import {
@@ -264,12 +264,6 @@ function Ps1652() {
 							pwdData={pwdData}
 							casteCertData={casteCertData}
 							gateScoreData={gateScoreData}
-							setAadhaarData={setAadhaarData}
-							setPanData={setPanData}
-							setEwsData={setEwsData}
-							setPwdData={setPwdData}
-							setCasteCertData={setCasteCertData}
-							setGateScoreData={setGateScoreData}
 						/>
 						<span>
 							Latest execution time:{' '}
