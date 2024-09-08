@@ -18,6 +18,15 @@ app.use(morgan('dev'));
 // Routes
 app.use('/api', extractionRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+const runApp = async () => {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+
+try {
+    runApp();
+} catch (error) {
+    console.error('Error!! Restarting:', error);
+    runApp();
+}
