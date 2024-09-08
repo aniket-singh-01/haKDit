@@ -1,3 +1,4 @@
+// @ts-expect-error - untyped library
 import React from 'react';
 import {
 	Table,
