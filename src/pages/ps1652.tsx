@@ -109,14 +109,12 @@ function Ps1652() {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [apiResponse, setApiResponse] = useState<IResponse | null>(null);
 	const [error, setError] = useState<string | null>(null);
-	const [executionTime, setExecutionTime] = useState<number | null>(null);
 	const [dialogs, setDialogs] = useState<IDialogs>({
 		dialog1: false,
 		dialog2: false,
 		dialog3: false,
 		errorDialog: false,
 	});
-	const [showApiResponse, setShowApiResponse] = useState<boolean>(false);
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -195,40 +193,13 @@ function Ps1652() {
 	};
 
 	const handleGenerateOutput = async () => {
-		setShowApiResponse(false);
-
-		let file = null;
-
-		switch (selectedDocType) {
-			case 'aadhaar':
-				file = AadhaarFile!;
-				break;
-			case 'pan':
-				file = PanDataFile!;
-				break;
-			case 'ews':
-				file = EwsFile!;
-				break;
-			case 'caste':
-				file = CasteFile!;
-				break;
-			case 'gate':
-				file = GateFile!;
-				break;
-			default:
-				file = PwdFile!;
-				break;
-		}
-
-		console.log(file);
-
 		const formData = new FormData();
-		formData.append('file', file!);
+		formData.append('file', selectedFile!);
 		formData.append('type', selectedDocType);
 
 		try {
 			const response = await axios.post(
-				file!.type.includes('image')
+				selectedFile!.type.includes('image')
 					? `${import.meta.env.VITE_BASE_URL}/api/upload/img`
 					: `${import.meta.env.VITE_BASE_URL}/api/upload/pdf`,
 				formData
@@ -249,21 +220,12 @@ function Ps1652() {
 			console.info(
 				`[GROQ]   Total time       : ${response.data.usage.total_time}`
 			);
-			setExecutionTime(response.data.executiontime);
 		} catch (err) {
 			console.error(err);
 			setError('Error occurred while processing the file. Please try again.');
 			setDialogs({ ...dialogs, errorDialog: true });
 		}
 	};
-
-	const [AadhaarFile, setAadhaarFile] = useState<File | null>(null);
-	const [LicenseFile, setLicenseFile] = useState<File | null>(null);
-	const [PanDataFile, setPanDataFile] = useState<File | null>(null);
-	const [EwsFile, setEwsFile] = useState<File | null>(null);
-	const [PwdFile, setPwdFile] = useState<File | null>(null);
-	const [CasteFile, setCasteFile] = useState<File | null>(null);
-	const [GateFile, setGateFile] = useState<File | null>(null);
 
 	const handleClearOutput = () => {
 		clearAllData();
@@ -272,508 +234,6 @@ function Ps1652() {
 		setError(null);
 		if (fileInputRef.current) {
 			fileInputRef.current.value = '';
-		}
-	};
-
-	const documentInputs: {
-		aadhaar: JSX.Element;
-		pan: JSX.Element;
-		ews: JSX.Element;
-		pwd: JSX.Element;
-		caste: JSX.Element;
-		gate: JSX.Element;
-	} = {
-		aadhaar: (
-			<>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Aadhaar Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Driver's License</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PAN Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanDataFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>EWS Certicate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PWD Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Caste Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setCasteFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>GATE Scorecard</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setGateFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-			</>
-		),
-		pan: (
-			<>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PAN Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanDataFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Aadhaar Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Driver's License</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>EWS Certicate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PWD Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Caste Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setCasteFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>GATE Scorecard</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setGateFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-			</>
-		),
-		ews: (
-			<>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>EWS Certicate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PAN Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanDataFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Aadhaar Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Driver's License</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PWD Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Caste Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setCasteFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>GATE Scorecard</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setGateFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-			</>
-		),
-		pwd: (
-			<>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PWD Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PAN Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanDataFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Aadhaar Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Driver's License</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>EWS Certicate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Caste Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setCasteFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>GATE Scorecard</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setGateFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-			</>
-		),
-		caste: (
-			<>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Caste Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setCasteFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PAN Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanDataFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Aadhaar Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Driver's License</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>EWS Certicate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PWD Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>GATE Scorecard</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setGateFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-			</>
-		),
-		gate: (
-			<>
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>GATE Scorecard</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setGateFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PAN Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanDataFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Aadhaar Card</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Driver's License</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>EWS Certicate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>PWD Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-
-				<div className='flex flex-col gap-1'>
-					<span className='font-2xl'>Caste Certificate</span>
-					<Input
-						type='file'
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setCasteFile(e.target.files![0]);
-						}}
-						accept='image/*, application/pdf'
-					/>
-				</div>
-			</>
-		),
-	};
-
-	const RenderForm = () => {
-		switch (selectedDocType) {
-			case 'aadhaar':
-				return documentInputs.aadhaar;
-			case 'pan':
-				return documentInputs.pan;
-			case 'ews':
-				return documentInputs.ews;
-			case 'caste':
-				return documentInputs.caste;
-			case 'gate':
-				return documentInputs.gate;
-			default:
-				return documentInputs.pwd;
 		}
 	};
 
@@ -786,39 +246,26 @@ function Ps1652() {
 				<div className='w-full py-4 border rounded flex flex-col md:flex-row justify-evenly items-center gap-5'>
 					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
 						<div className='bg-blue-600 size-5 rounded-full' />
-						<p
-							className='underline text-blue-400 cursor-pointer'
-							onClick={() => setDialogs({ ...dialogs, dialog1: true })}
-						>
+						<Button onClick={() => setDialogs({ ...dialogs, dialog1: true })}>
 							Select document
-						</p>
+						</Button>
 					</div>
 					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
 						<div className='bg-blue-600 size-5 rounded-full' />
-						<p
+						<Button
 							onClick={() => setDialogs({ ...dialogs, dialog2: true })}
-							className='underline text-blue-400 cursor-pointer'
+							disabled={apiResponse === null}
 						>
 							Enter data
-						</p>
-					</div>
-
-					<div className='relative flex flex-1 flex-col items-center justify-center gap-2'>
-						<div className='bg-blue-600 size-5 rounded-full' />
-						<p
-							onClick={() => setShowApiResponse(true)}
-							className='underline text-blue-400 cursor-pointer'
-						>
-							Validate
-						</p>
+						</Button>
 					</div>
 				</div>
-				{showApiResponse && apiResponse !== null && (
+				{apiResponse !== null && (
 					<pre className='w-full my-5 overflow-y-auto'>
 						{JSON.stringify(apiResponse, null, 2)}
 					</pre>
 				)}
-				{showApiResponse && apiResponse !== null && (
+				{apiResponse !== null && (
 					<>
 						<DocumentTable
 							apiResponse={apiResponse}
@@ -840,34 +287,45 @@ function Ps1652() {
 				open={dialogs.dialog1}
 				onOpenChange={(open) => setDialogs({ ...dialogs, dialog1: open })}
 			>
-				<DialogContent>
+				<DialogContent aria-description='select file dialog'>
 					<DialogHeader>
 						<DialogTitle>Select document</DialogTitle>
 					</DialogHeader>
-					<DialogDescription className='flex flex-col gap-3'>
-						<Select
-							defaultValue='AadhaarCard'
-							value={selectedDocType}
-							onValueChange={(value) => {
-								setSelectedDocType(value);
+					<Select
+						defaultValue='AadhaarCard'
+						value={selectedDocType}
+						onValueChange={(value) => {
+							setSelectedDocType(value);
+						}}
+						required
+					>
+						<SelectTrigger>
+							<SelectValue placeholder='Select document type' />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value='aadhaar'>Aadhaar card</SelectItem>
+							<SelectItem value='pan'>PAN card</SelectItem>
+							<SelectItem value='ews'>EWS certificate</SelectItem>
+							<SelectItem value='pwd'>PWD certificate</SelectItem>
+							<SelectItem value='caste'>Caste certificate</SelectItem>
+							<SelectItem value='gate'>GATE scorecard</SelectItem>
+							<SelectItem value='generic'></SelectItem>
+						</SelectContent>
+					</Select>
+					<div className='flex flex-col gap-1'>
+						<span className='font-2xl'>
+							Document: {selectedDocType.toUpperCase()}
+						</span>
+						<Input
+							type='file'
+							ref={fileInputRef}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+								setSelectedFile(e.target.files![0]);
+								fileInputRef.current!.value = e.target.files![0].name;
 							}}
-							required
-						>
-							<SelectTrigger>
-								<SelectValue placeholder='Select document type' />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value='aadhaar'>Aadhaar card</SelectItem>
-								<SelectItem value='pan'>PAN card</SelectItem>
-								<SelectItem value='ews'>EWS certificate</SelectItem>
-								<SelectItem value='pwd'>PWD certificate</SelectItem>
-								<SelectItem value='caste'>Caste certificate</SelectItem>
-								<SelectItem value='gate'>GATE scorecard</SelectItem>
-								<SelectItem value='generic'></SelectItem>
-							</SelectContent>
-						</Select>
-						<RenderForm />
-					</DialogDescription>
+							accept='image/*, application/pdf'
+						/>
+					</div>
 					<DialogFooter>
 						<Button
 							onClick={() => {
@@ -886,29 +344,26 @@ function Ps1652() {
 				open={dialogs.dialog2}
 				onOpenChange={(open) => setDialogs({ ...dialogs, dialog2: open })}
 			>
-				<DialogContent>
+				<DialogContent aria-description='enter data dialog'>
 					<DialogHeader>
 						<DialogTitle>Enter your data</DialogTitle>
 					</DialogHeader>
-					<DialogDescription className='flex flex-col gap-3'>
-						<DocumentForm
-							aadhaarData={aadhaarData}
-							setAadhaarData={setAadhaarData}
-							panData={panData}
-							setPanData={setPanData}
-							ewsData={ewsData}
-							setEwsData={setEwsData}
-							pwdData={pwdData}
-							setPwdData={setPwdData}
-							casteCertData={casteCertData}
-							setCasteCertData={setCasteCertData}
-							gateScoreData={gateScoreData}
-							setGateScoreData={setGateScoreData}
-							licenseData={licenseData}
-							setLicenseData={setLicenseData}
-							type={selectedDocType}
-						/>
-					</DialogDescription>
+					<DocumentForm
+						apiResponse={apiResponse!}
+						aadhaarData={aadhaarData}
+						setAadhaarData={setAadhaarData}
+						panData={panData}
+						setPanData={setPanData}
+						ewsData={ewsData}
+						setEwsData={setEwsData}
+						pwdData={pwdData}
+						setPwdData={setPwdData}
+						casteCertData={casteCertData}
+						setCasteCertData={setCasteCertData}
+						gateScoreData={gateScoreData}
+						setGateScoreData={setGateScoreData}
+						type={selectedDocType}
+					/>
 					<DialogFooter className='flex flex-col md:flex-row gap-2'>
 						<Button onClick={handleClearOutput}>Clear</Button>
 						<Button
@@ -927,7 +382,7 @@ function Ps1652() {
 				open={dialogs.errorDialog}
 				onOpenChange={(open) => setDialogs({ ...dialogs, errorDialog: open })}
 			>
-				<DialogContent>
+				<DialogContent aria-describedby='error dialog'>
 					<DialogHeader>
 						<DialogTitle>Error</DialogTitle>
 					</DialogHeader>

@@ -17,6 +17,7 @@ import {
 	IPwdData,
 	IResponse,
 } from '@/types'; // Adjust import as needed
+import { compareData } from './utils';
 
 interface DocumentTableProps {
 	apiResponse: IResponse;
@@ -40,21 +41,6 @@ const DocumentTable = ({
 	casteCertData,
 	gateScoreData,
 }: DocumentTableProps) => {
-	const compareData = (apiData: string | null, userData: string | null) => {
-		return apiData
-			?.toLowerCase()
-			.replaceAll(' ', '')
-			.replaceAll('-', '')
-			.replaceAll('/', '') ===
-			userData
-				?.toLowerCase()
-				.replaceAll(' ', '')
-				.replaceAll('-', '')
-				.replaceAll('/', '')
-			? 'Yes'
-			: 'No';
-	};
-
 	switch (type) {
 		case 'aadhaar':
 			return (
