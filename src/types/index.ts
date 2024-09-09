@@ -1,4 +1,5 @@
 export interface IAadhaarData {
+	file: File | null;
 	name: string | null;
 	dob: string | null;
 	docno: string | null;
@@ -6,6 +7,7 @@ export interface IAadhaarData {
 }
 
 export interface IPanData {
+	file: File | null;
 	name: string | null;
 	dob: string | null;
 	docno: string | null;
@@ -13,6 +15,7 @@ export interface IPanData {
 }
 
 export interface IEwsData {
+	file: File | null;
 	name: string | null;
 	docno: string | null;
 	certno: string | null;
@@ -24,7 +27,19 @@ export interface IEwsData {
 	fathername: string | null;
 }
 
+export interface ILicenseData {
+	name: string | null;
+	parentname: string | null;
+	dob: string | null;
+	validupto: string | null;
+	dlnumber: string | null;
+	address: string | null;
+	issuingauthority: string | null;
+	file: File | null;
+}
+
 export interface IPwdData {
+	file: File | null;
 	name: string | null;
 	certno: string | null;
 	dateofissue: string | null;
@@ -38,6 +53,7 @@ export interface IPwdData {
 }
 
 export interface ICasteCertData {
+	file: File | null;
 	name: string | null;
 	certno: string | null;
 	fathername: string | null;
@@ -46,6 +62,7 @@ export interface ICasteCertData {
 }
 
 export interface IGateScoreData {
+	file: File | null;
 	name: string | null;
 	parentname: string | null;
 	regno: string | null;

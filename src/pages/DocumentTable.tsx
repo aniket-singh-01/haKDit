@@ -12,6 +12,7 @@ import {
 	ICasteCertData,
 	IEwsData,
 	IGateScoreData,
+	ILicenseData,
 	IPanData,
 	IPwdData,
 	IResponse,
@@ -26,6 +27,7 @@ interface DocumentTableProps {
 	pwdData: IPwdData;
 	casteCertData: ICasteCertData;
 	gateScoreData: IGateScoreData;
+	licenseData: ILicenseData;
 }
 
 const DocumentTable = ({
@@ -37,16 +39,14 @@ const DocumentTable = ({
 	pwdData,
 	casteCertData,
 	gateScoreData,
+	licenseData,
 }: DocumentTableProps) => {
 	const compareData = (apiData: string | null, userData: string | null) => {
-		return apiData?.toLowerCase().replaceAll(' ', '') ===
-			userData?.toLowerCase().replaceAll(' ', '')
+		return apiData!.toLowerCase().replaceAll(' ', '') ===
+			userData!.toLowerCase().replaceAll(' ', '')
 			? 'Yes'
 			: 'No';
 	};
-
-	console.log(apiResponse);
-	console.log(aadhaarData);
 
 	switch (type) {
 		case 'aadhaar':

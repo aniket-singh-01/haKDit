@@ -95,6 +95,7 @@ import {
 	ICasteCertData,
 	IEwsData,
 	IGateScoreData,
+	ILicenseData,
 	IPanData,
 	IPwdData,
 } from '@/types';
@@ -113,12 +114,14 @@ interface DocumentFormProps {
 	pwdData: IPwdData;
 	casteCertData: ICasteCertData;
 	gateScoreData: IGateScoreData;
+	licenseData: ILicenseData;
 	setAadhaarData: (data: IAadhaarData) => void;
 	setPanData: (data: IPanData) => void;
 	setEwsData: (data: IEwsData) => void;
 	setPwdData: (data: IPwdData) => void;
 	setCasteCertData: (data: ICasteCertData) => void;
 	setGateScoreData: (data: IGateScoreData) => void;
+	setLicenseData: (data: ILicenseData) => void;
 }
 
 const DocumentForm = ({
@@ -129,12 +132,14 @@ const DocumentForm = ({
 	pwdData,
 	casteCertData,
 	gateScoreData,
+	licenseData,
 	setAadhaarData,
 	setPanData,
 	setEwsData,
 	setPwdData,
 	setCasteCertData,
 	setGateScoreData,
+	setLicenseData,
 }: DocumentFormProps) => {
 	switch (type) {
 		case 'aadhaar':
@@ -336,7 +341,7 @@ const DocumentForm = ({
 				</div>
 			);
 
-		case 'casteCert':
+		case 'caste':
 			return (
 				<div className='flex flex-col gap-2'>
 					<Input
@@ -377,7 +382,7 @@ const DocumentForm = ({
 				</div>
 			);
 
-		case 'gateScore':
+		case 'gate':
 			return (
 				<div className='flex flex-col gap-2'>
 					<Input
