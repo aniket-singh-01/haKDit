@@ -101,6 +101,17 @@ const generateExtractionPrompt = (type, ocrText) => {
                 caste: The caste of the person.
             `
             break;
+        case 'license':
+            fields = `
+                name: The name of the person
+                parentname: Card holder's parent name
+                dob: The date of birth of the holder
+                validupto: The date till the license is 
+                dlnumber: This number is two digit state code followed by 13 numeric digits
+                address: The address of the holder
+                issuingauthority: The issuing authority of the license  
+            `
+            break;
         default:
             fields = `
                 name: The name of the person or entity. Return empty string if uncertain.
@@ -110,6 +121,7 @@ const generateExtractionPrompt = (type, ocrText) => {
                 otherdata: Any other relevant information that can be extracted. Return empty string if uncertain.
             `
             break;
+
     }
 
     let prompt = `
