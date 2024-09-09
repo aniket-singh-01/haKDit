@@ -34,6 +34,8 @@ const processImage = async (fileBuffer) => {
     } catch (error) {
         console.error('Error during image processing:', error);
         throw error;
+    } finally {
+        fs.existsSync(filepath) && fs.rmSync(filepath);
     }
 };
 
@@ -48,13 +50,10 @@ const processImageFile = async (req, res) => {
     let filepaths;
 
     try {
-        // Process image file
         filepaths = await processImage(req.file.buffer);
 
-        // Perform OCR on the processed files
         const extractedText = await performOCR(filepaths);
 
-        // Generate prompt and call Groq API
         const groqOutput = await generateExtractionOutput(type, extractedText);
 
         const endTime = Date.now();
@@ -66,10 +65,7 @@ const processImageFile = async (req, res) => {
         console.error('Error processing file:', error);
         return res.status(500).send('Internal Server Error');
     } finally {
-        // Clean up the processed files after response
-        if (fs.existsSync(filepath)) {
-            fs.rmSync(filepath);
-        }
+        fs.existsSync(filepath) && fs.rmSync(filepath);
     }
 };
 
