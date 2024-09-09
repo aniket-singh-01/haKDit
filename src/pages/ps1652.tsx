@@ -197,13 +197,38 @@ function Ps1652() {
 	const handleGenerateOutput = async () => {
 		setShowApiResponse(false);
 
+		let file = null;
+
+		switch (selectedDocType) {
+			case 'aadhaar':
+				file = AadhaarFile!;
+				break;
+			case 'pan':
+				file = PanDataFile!;
+				break;
+			case 'ews':
+				file = EwsFile!;
+				break;
+			case 'caste':
+				file = CasteFile!;
+				break;
+			case 'gate':
+				file = GateFile!;
+				break;
+			default:
+				file = PwdFile!;
+				break;
+		}
+
+		console.log(file);
+
 		const formData = new FormData();
-		formData.append('file', selectedFile!);
+		formData.append('file', file!);
 		formData.append('type', selectedDocType);
 
 		try {
 			const response = await axios.post(
-				selectedFile!.type.includes('image')
+				file!.type.includes('image')
 					? `${import.meta.env.VITE_BASE_URL}/api/upload/img`
 					: `${import.meta.env.VITE_BASE_URL}/api/upload/pdf`,
 				formData
@@ -235,6 +260,14 @@ function Ps1652() {
 		}
 	};
 
+	const [AadhaarFile, setAadhaarFile] = useState<File | null>(null);
+	const [LicenseFile, setLicenseFile] = useState<File | null>(null);
+	const [PanDataFile, setPanDataFile] = useState<File | null>(null);
+	const [EwsFile, setEwsFile] = useState<File | null>(null);
+	const [PwdFile, setPwdFile] = useState<File | null>(null);
+	const [CasteFile, setCasteFile] = useState<File | null>(null);
+	const [GateFile, setGateFile] = useState<File | null>(null);
+
 	const handleClearOutput = () => {
 		clearAllData();
 		setSelectedFile(null);
@@ -260,7 +293,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarData({ ...aadhaarData, file: e.target.files![0] });
+							setAadhaarFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -271,7 +304,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseData({ ...licenseData, file: e.target.files![0] });
+							setLicenseFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -282,7 +315,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanData({ ...panData, file: e.target.files![0] });
+							setPanDataFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -293,7 +326,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsData({ ...ewsData, file: e.target.files![0] });
+							setEwsFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -304,7 +337,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setPwdFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -315,7 +348,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setCasteFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -325,7 +358,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setGateFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -339,7 +372,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanData({ ...panData, file: e.target.files![0] });
+							setPanDataFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -350,7 +383,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarData({ ...aadhaarData, file: e.target.files![0] });
+							setAadhaarFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -361,7 +394,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseData({ ...licenseData, file: e.target.files![0] });
+							setLicenseFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -372,7 +405,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsData({ ...ewsData, file: e.target.files![0] });
+							setEwsFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -383,7 +416,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setPwdFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -394,7 +427,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setCasteFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -404,7 +437,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setGateFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -418,7 +451,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsData({ ...ewsData, file: e.target.files![0] });
+							setEwsFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -429,7 +462,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanData({ ...panData, file: e.target.files![0] });
+							setPanDataFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -440,7 +473,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarData({ ...aadhaarData, file: e.target.files![0] });
+							setAadhaarFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -451,7 +484,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseData({ ...licenseData, file: e.target.files![0] });
+							setLicenseFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -462,7 +495,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setPwdFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -473,7 +506,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setCasteFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -483,7 +516,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setGateFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -497,7 +530,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setPwdFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -508,7 +541,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanData({ ...panData, file: e.target.files![0] });
+							setPanDataFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -519,7 +552,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarData({ ...aadhaarData, file: e.target.files![0] });
+							setAadhaarFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -530,7 +563,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseData({ ...licenseData, file: e.target.files![0] });
+							setLicenseFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -541,7 +574,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsData({ ...ewsData, file: e.target.files![0] });
+							setEwsFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -552,7 +585,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setCasteFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -562,7 +595,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setGateFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -576,7 +609,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setCasteFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -587,7 +620,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanData({ ...panData, file: e.target.files![0] });
+							setPanDataFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -598,7 +631,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarData({ ...aadhaarData, file: e.target.files![0] });
+							setAadhaarFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -609,7 +642,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseData({ ...licenseData, file: e.target.files![0] });
+							setLicenseFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -620,7 +653,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsData({ ...ewsData, file: e.target.files![0] });
+							setEwsFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -631,7 +664,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setPwdFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -641,7 +674,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setGateFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -655,7 +688,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setGateFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -666,7 +699,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPanData({ ...panData, file: e.target.files![0] });
+							setPanDataFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -677,7 +710,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setAadhaarData({ ...aadhaarData, file: e.target.files![0] });
+							setAadhaarFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -688,7 +721,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setLicenseData({ ...licenseData, file: e.target.files![0] });
+							setLicenseFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -699,7 +732,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setEwsData({ ...ewsData, file: e.target.files![0] });
+							setEwsFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -710,7 +743,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setPwdFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>
@@ -721,7 +754,7 @@ function Ps1652() {
 					<Input
 						type='file'
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setPwdData({ ...pwdData, file: e.target.files![0] });
+							setCasteFile(e.target.files![0]);
 						}}
 						accept='image/*, application/pdf'
 					/>

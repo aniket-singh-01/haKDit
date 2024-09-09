@@ -42,8 +42,8 @@ const DocumentTable = ({
 	licenseData,
 }: DocumentTableProps) => {
 	const compareData = (apiData: string | null, userData: string | null) => {
-		return apiData!.toLowerCase().replaceAll(' ', '') ===
-			userData!.toLowerCase().replaceAll(' ', '')
+		return apiData?.toLowerCase().replaceAll(' ', '') ===
+			userData?.toLowerCase().replaceAll(' ', '')
 			? 'Yes'
 			: 'No';
 	};
@@ -119,7 +119,7 @@ const DocumentTable = ({
 						<TableRow>
 							<TableCell>Name</TableCell>
 							<TableCell>{apiResponse.name}</TableCell>
-							<TableCell>{apiResponse.name}</TableCell>
+							<TableCell>{panData.name}</TableCell>
 							<TableCell>
 								{compareData(apiResponse.name!, panData.name)}
 							</TableCell>
