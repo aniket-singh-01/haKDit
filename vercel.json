@@ -1,8 +1,3 @@
 {
-	"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
-
-	"env": {
-		"BRANCH": "main"
-	},
-	"buildCommand": "if [ \"$BRANCH\" != \"main\" ]; then echo \"Cannot deploy from $BRANCH branch\"; exit 1; else pnpm build; fi"
+	"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
