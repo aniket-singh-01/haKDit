@@ -249,9 +249,6 @@ function Ps1652() {
 			console.info(
 				`[GROQ]   Total time       : ${response.data.usage.total_time}`
 			);
-			console.info(
-				`[SERVER] Execution time   : ${response.data.executiontime}`
-			);
 			setExecutionTime(response.data.executiontime);
 		} catch (err) {
 			console.error(err);
@@ -834,11 +831,6 @@ function Ps1652() {
 							gateScoreData={gateScoreData}
 							licenseData={licenseData}
 						/>
-						<span>
-							Latest execution time:{' '}
-							<span className='font-bold underline'>{executionTime}</span>
-							seconds
-						</span>
 					</>
 				)}
 			</div>
