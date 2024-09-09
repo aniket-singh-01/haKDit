@@ -1,1 +1,10 @@
-{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+{
+	"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+
+	"env": {
+		"BRANCH": "main"
+	},
+	"scripts": {
+		"vercel-deploy": "if [ \"$BRANCH\" != \"main\" ]; then echo \"Cannot deploy from $BRANCH branch\"; exit 1; fi"
+	}
+}
