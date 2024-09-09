@@ -4,7 +4,5 @@
 	"env": {
 		"BRANCH": "main"
 	},
-	"scripts": {
-		"vercel-deploy": "if [ \"$BRANCH\" != \"main\" ]; then echo \"Cannot deploy from $BRANCH branch\"; exit 1; fi"
-	}
+	"buildCommand": "if [ \"$BRANCH\" != \"main\" ]; then echo \"Cannot deploy from $BRANCH branch\"; exit 1; else pnpm build; fi"
 }
