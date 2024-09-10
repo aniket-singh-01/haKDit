@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "node index.js",
-		"build": "mkdir -p uploads",
+		"build": "sudo apt-get install imagemagick ghostscript poppler-utils && mkdir -p uploads",
 		"dev": "nodemon index.js"
 	},
 	"engines": {
@@ -27,7 +27,7 @@
 		"morgan": "^1.10.0",
 		"multer": "1.4.5-lts.1",
 		"ocr-space-api-wrapper": "^2.3.1",
-		"pdf-poppler": "^0.2.1",
+		"pdf-image": "^2.0.0",
 		"pdfjs-dist": "^4.6.82",
 		"sharp": "^0.33.5"
 	},

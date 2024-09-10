@@ -3,14 +3,14 @@ const path = require('path');
 const { randomInt } = require('crypto');
 const { performOCR, generateExtractionOutput } = require('./controllerUtils');
 const sharp = require('sharp');
-const Poppler = require('pdf-poppler');
+const { PDFImage } = require("pdf-image");
 
 let filename = '';
 let filepath = '';
 
 const convertPDFToImages = async (pdfBuffer) => {
-    const filename = `${Date.now()}${randomInt(1000)}.webp`;
-    const filepath = path.join(__dirname, "../uploads", filename);
+    filename = `${Date.now()}${randomInt(1000)}.webp`;
+    filepath = path.join(__dirname, "../uploads", filename);
     const intermediateImageBaseName = `${Date.now()}${randomInt(1000)}`;
     const intermediateImagePath = path.join(__dirname, "../uploads", intermediateImageBaseName + ".png");
 
@@ -18,16 +18,15 @@ const convertPDFToImages = async (pdfBuffer) => {
         const tempPDFPath = path.join(__dirname, "../uploads", `${intermediateImageBaseName}.pdf`);
         fs.writeFileSync(tempPDFPath, pdfBuffer);
 
-        const options = {
-            format: 'png',
-            out_dir: path.dirname(intermediateImagePath),
-            out_prefix: path.basename(intermediateImageBaseName),
-            page: 1,
-        };
+        const pdfImage = new PDFImage(tempPDFPath, {
+            convertOptions: {
+                "-resize": "800px", // Resizing image width to 800px, keeping aspect ratio
+                "-quality": "100", // High-quality conversion
+            },
+        });
 
-        await Poppler.convert(tempPDFPath, options);
-
-        const convertedImagePath = path.join(options.out_dir, `${options.out_prefix}-1.png`);
+        // Convert first page of the PDF to an image
+        const convertedImagePath = await pdfImage.convertPage(0);
 
         if (!fs.existsSync(convertedImagePath)) {
             throw new Error(`Converted image not found: ${convertedImagePath}`);
@@ -51,6 +50,7 @@ const convertPDFToImages = async (pdfBuffer) => {
 
         fs.writeFileSync(filepath, webpBuffer);
 
+        // Clean up
         fs.unlinkSync(tempPDFPath);
         fs.unlinkSync(convertedImagePath);
 
