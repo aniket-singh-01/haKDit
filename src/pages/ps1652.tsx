@@ -193,6 +193,8 @@ function Ps1652() {
 	};
 
 	const handleGenerateOutput = async () => {
+        setApiResponse(null)
+
 		const formData = new FormData();
 		formData.append('file', selectedFile!);
 		formData.append('type', selectedDocType);
