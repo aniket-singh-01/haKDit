@@ -6,6 +6,8 @@ require('dotenv').config();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const performOCR = async (filepaths) => {
+    console.log(filepaths);
+
     try {
         let text = '';
         const result = await ocrSpace(filepaths, process.env.SPACE_OCR_KEY);

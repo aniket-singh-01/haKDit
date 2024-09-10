@@ -34,8 +34,6 @@ const processImage = async (fileBuffer) => {
     } catch (error) {
         console.error('Error during image processing:', error);
         throw error;
-    } finally {
-        fs.existsSync(filepath) && fs.rmSync(filepath);
     }
 };
 
