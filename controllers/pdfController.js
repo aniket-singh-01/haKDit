@@ -20,7 +20,7 @@ const convertPDFToImages = async (pdfBuffer) => {
 
         const pdfImage = new PDFImage(tempPDFPath, {
             convertOptions: {
-                "-resize": "800px", // Resizing image width to 800px, keeping aspect ratio
+                "-resize": "800x800", // Resizing image width to 800px, keeping aspect ratio
                 "-quality": "100", // High-quality conversion
             },
         });

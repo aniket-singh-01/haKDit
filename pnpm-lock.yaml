@@ -47,9 +47,6 @@ importers:
       pdf-image:
         specifier: ^2.0.0
         version: 2.0.0
-      pdf-poppler:
-        specifier: ^0.2.1
-        version: 0.2.1
       pdfjs-dist:
         specifier: ^4.6.82
         version: 4.6.82
@@ -1456,9 +1453,6 @@ packages:
     resolution: {integrity: sha512-v6ZJ/efsBpGrGGknjtq9J/oC8tZWq0KWL5vQrk2GlzLEQPUDB1ex+13Rmidl1neNN358Jn9EHZw5y07FFtaC7A==}
     engines: {node: '>=6.8.1'}
 
-  pdf-poppler@0.2.1:
-    resolution: {integrity: sha512-ilrm02mfsha1pR1wmiVKNRIkjvSo70gorg3DIPOzCl6pFU5S39z+gTHLiwIKn808H4YVYVnm6JstUhGNfiGKXg==}
-
   pdfjs-dist@4.6.82:
     resolution: {integrity: sha512-BUOryeRFwvbLe0lOU6NhkJNuVQUp06WxlJVVCsxdmJ4y5cU3O3s3/0DunVdK1PMm7v2MUw52qKYaidhDH1Z9+w==}
     engines: {node: '>=18'}
@@ -2671,8 +2665,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
     optional: true
-
-  pdf-poppler@0.2.1: {}
 
   pdfjs-dist@4.6.82:
     optionalDependencies:
